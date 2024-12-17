@@ -10,7 +10,7 @@ import (
 
 type AppConfig struct {
 	EnvConfig *EConfig
-	Database *pgxpool.Pool
+	Database  *pgxpool.Pool
 }
 
 // Initialize app config initializes & load env configs later setting up database connections
@@ -33,6 +33,6 @@ func InitializeAppConfig(_ string) (*AppConfig, error) {
 
 	return &AppConfig{
 		EnvConfig: config,
-		Database: db,
+		Database:  db,
 	}, nil
 }

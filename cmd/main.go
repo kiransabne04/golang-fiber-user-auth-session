@@ -19,12 +19,10 @@ func main() {
 	defer appConfig.Database.Close()
 
 	//initialize all services with AppConfig
-	appServices := internal.NewAppServices(appConfig)
+	appServices := internal.NewAppServices(appConfig.Database)
 
 	// create a  new fiber instance
-	app := fiber.New(fiber.Config{
-
-	})
+	app := fiber.New(fiber.Config{EnablePrintRoutes: true})
 
 	routers.SetupRouters(app, appServices)
 

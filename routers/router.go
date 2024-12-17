@@ -2,6 +2,7 @@ package routers
 
 import (
 	"fiber-user-auth-session/internal"
+	"fiber-user-auth-session/internal/user"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -24,6 +25,9 @@ func SetupRouters(app *fiber.App, services *internal.AppServices) {
 	// })
 	//
 
-	// user routes
-	userRoutes(v1, services)
+	// Initialize handlers
+	userHandler := user.NewUserHandler(services.UserService)
+	//authRoutes(v1, services)
+	// Register routes
+	RegisterUserRoutes(v1, userHandler)
 }

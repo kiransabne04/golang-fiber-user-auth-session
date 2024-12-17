@@ -8,7 +8,7 @@ import (
 )
 
 type UserService struct {
-	repo *userRepository
+	repo *UserRepository
 }
 
 type DashboardData struct {
@@ -23,11 +23,11 @@ type GetMeResponse struct {
 }
 
 // NewUserService creates a new instance of userService.
-func NewUserService(repo *userRepository) *UserService {
+func NewUserService(repo *UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
-// RegisterUser registers a new user with hashed password.
+// RegisterUser registears a new user with hashed password.
 func (s *UserService) RegisterUser(ctx context.Context, name, email, password string) (int, error) {
 	// Validate input
 	if name == "" || email == "" || password == "" {
@@ -43,7 +43,7 @@ func (s *UserService) RegisterUser(ctx context.Context, name, email, password st
 	// Create user struct
 	user := &User{
 		//Name:         name,
-		Email:        email,
+		Email: email,
 		//PasswordHash: string(hashedPassword),
 	}
 
@@ -55,8 +55,8 @@ func (s *UserService) ListAllUser() (User, error) {
 	return User{ID: 1, FirstName: "Kiran", LastName: "Sabne"}, nil
 }
 
-func (s *UserService) LoginUser(ctx context.Context, email, password string) (*User, error) {
-	user, err := s.repo.FindByEmail(ctx, email)
+func (s *UserService) Login(ctx context.Context, email, password string) (*User, error) {
+	user, err := s.repo.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, errors.New("invalid email or password")
 	}

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -67,17 +68,17 @@ type UserResponse struct {
 }
 
 // userRepository handles database operations for users.
-type userRepository struct {
+type UserRepository struct {
 	db *pgxpool.Pool
 }
 
 // NewUserRepository creates a new instance of userRepository.
-func NewUserRepository(db *pgxpool.Pool) *userRepository {
-	return &userRepository{db: db}
+func NewUserRepository(db *pgxpool.Pool) *UserRepository {
+	return &UserRepository{db: db}
 }
 
 // CreateUser implements Repository.
-func (r *userRepository) CreateUser(ctx context.Context, user *User) (int, error) {
+func (r *UserRepository) CreateUser(ctx context.Context, user *User) (int, error) {
 	// query := `
 	// 	INSERT INTO users (name, email, password_hash)
 	// 	VALUES ($1, $2, $3)
@@ -92,7 +93,7 @@ func (r *userRepository) CreateUser(ctx context.Context, user *User) (int, error
 }
 
 // FindByEmail implements query returning user data for email id.
-func (r *userRepository) FindByEmail(ctx context.Context, email string) (*User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*User, error) {
 	var user User
 	query := `SELECT id, email, first_name, last_name, password, active, created_at FROM person WHERE email = $1`
 	err := r.db.QueryRow(ctx, query, email).
@@ -100,10 +101,10 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*User, 
 	if err != nil {
 		return nil, err
 	}
-	 return &user, nil
+	return &user, nil
 }
 
-func (r *userRepository) ValidateTenant(slugName string) (bool, error) {
+func (r *UserRepository) ValidateTenant(slugName string) (bool, error) {
 	var slugNameValue string
 	log.Println("validateTenant slugName -> ", slugName)
 	sqlStmt := `select slug_name from tenant where slug_name = $1`
@@ -114,4 +115,20 @@ func (r *userRepository) ValidateTenant(slugName string) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	query := `SELECT id, email, first_name, last_name, password, active, created_at, updated_at
+        FROM person
+        WHERE email = $1 AND active = true`
+	var user User
+
+	err := r.db.QueryRow(ctx, query, email).Scan(
+		&user.ID, &user.Email, &user.FirstName, &user.LastName, &user.Password,
+		&user.Active, &user.CreatedAt, &user.UpdatedAt,
+	)
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+	return &user, nil
 }

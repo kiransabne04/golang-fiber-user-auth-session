@@ -8,12 +8,12 @@ import (
 )
 
 type Session struct {
-	SessionID   string
-	PersonID    int
-	IPAddress   string
-	UserAgent   string
+	SessionID    string
+	PersonID     int
+	IPAddress    string
+	UserAgent    string
 	LastActivity time.Time
-	IsActive    bool
+	IsActive     bool
 }
 
 type SessionRepository struct {
@@ -23,7 +23,6 @@ type SessionRepository struct {
 func NewSessionRepository(db *pgxpool.Pool) *SessionRepository {
 	return &SessionRepository{db: db}
 }
-
 
 func (r *SessionRepository) GetSessionByID(ctx context.Context, sessionID string) (*Session, error) {
 	query := `
