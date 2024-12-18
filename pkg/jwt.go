@@ -16,7 +16,7 @@ type Claims struct {
 }
 
 // GenerateAccessToken generates access token valid for 15 mins
-func GenerateAccessToken(sessionID string, userID int) (string, error) {
+func GenerateAccessToken(sessionID string, userID int, secretKey []byte) (string, error) {
 	claims := Claims{
 		SessionID: sessionID,
 		UserID:    userID,
@@ -30,7 +30,7 @@ func GenerateAccessToken(sessionID string, userID int) (string, error) {
 }
 
 // GenerateRefreshToken generates refresh token valid for 7 days
-func GenerateRefreshToken() (string, error) {
+func GenerateRefreshToken(secretKey []byte) (string, error) {
 	claims := jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
 	}

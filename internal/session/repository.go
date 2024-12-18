@@ -63,3 +63,31 @@ func (r *SessionRepository) CreateSession(ctx context.Context, personID int, acc
 	}
 	return sessionID, nil
 }
+
+func (r *SessionRepository) CreateNewSession(ctx context.Context, personID int, deviceInfo, ipAddress, userAgent string) (string, error) {
+	var sessionID string
+	query := `
+		insert into person_session(person_id, device_info, ip_address, user_agent) values ($1, $2, $3, $4) returning session_id
+	`
+
+	err := r.db.QueryRow(ctx, query, personID, deviceInfo, ipAddress, userAgent).Scan(&sessionID)
+	if err != nil {
+		return "", err
+	}
+	return sessionID, nil
+}
+
+func (r *SessionRepository) UpdateSessionWithTokens(ctx context.Context, sessionId, accessToken, refreshToken string) (string, error) {
+	var sessionID string
+	query :=
+		`
+	update person_session set access_token = $1, refresh_token = $2 where session_id = $3 and is_active = true returning session_id
+	`
+
+	err := r.db.QueryRow(ctx, query, accessToken, refreshToken, sessionID).Scan(&sessionID)
+	if err != nil {
+		return "", err
+	}
+
+	return sessionID, nil
+}

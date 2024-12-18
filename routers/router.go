@@ -2,6 +2,7 @@ package routers
 
 import (
 	"fiber-user-auth-session/internal"
+	"fiber-user-auth-session/internal/auth"
 	"fiber-user-auth-session/internal/user"
 
 	"github.com/gofiber/fiber/v2"
@@ -27,7 +28,9 @@ func SetupRouters(app *fiber.App, services *internal.AppServices) {
 
 	// Initialize handlers
 	userHandler := user.NewUserHandler(services.UserService)
+	authHandler := auth.NewAuthHandler(services.AuthService)
 	//authRoutes(v1, services)
 	// Register routes
 	RegisterUserRoutes(v1, userHandler)
+	RegisterAuthRoutes(v1, authHandler)
 }

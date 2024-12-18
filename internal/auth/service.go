@@ -11,10 +11,11 @@ import (
 type AuthService struct {
 	UserRepo    *user.UserRepository
 	SessionRepo *session.SessionRepository
+	SecretKey   []byte
 }
 
-func NewAuthService(userRepo *user.UserRepository, sessionRepo *session.SessionRepository) *AuthService {
-	return &AuthService{UserRepo: userRepo, SessionRepo: sessionRepo}
+func NewAuthService(userRepo *user.UserRepository, sessionRepo *session.SessionRepository, secretKey []byte) *AuthService {
+	return &AuthService{UserRepo: userRepo, SessionRepo: sessionRepo, SecretKey: secretKey}
 }
 
 func (s *AuthService) LoginService(ctx context.Context, email, password string) (string, string, error) {
@@ -24,24 +25,28 @@ func (s *AuthService) LoginService(ctx context.Context, email, password string) 
 		return "", "", err
 	}
 	log.Println("user -> ", user)
-	
-	//generate access token
-	accessToken, err := pkg.GenerateAccessToken("", user.ID)
-	if err != nil {
-		return "", "", err
-	}
-
-	refreshToken, err := pkg.GenerateRefreshToken()
-	if err != nil {
-		return "", "", err
-	}
-
 
 	// vreate session
-	_, err = s.SessionRepo.CreateSession(ctx, user.ID, accessToken, refreshToken, "", "", "")
+	// _, err = s.SessionRepo.CreateSession(ctx, user.ID, accessToken, refreshToken, "", "", "")
+	// if err != nil {
+	// 	return "", "", err
+	// }
+	sessionID, err := s.SessionRepo.CreateNewSession(ctx, user.ID, "", "", "")
 	if err != nil {
 		return "", "", err
 	}
-	
+	log.Println("sessionID created -> ", sessionID)
+
+	//generate access token
+	accessToken, err := pkg.GenerateAccessToken(sessionID, user.ID, s.SecretKey)
+	if err != nil {
+		return "", "", err
+	}
+
+	refreshToken, err := pkg.GenerateRefreshToken(s.SecretKey)
+	if err != nil {
+		return "", "", err
+	}
+
 	return accessToken, refreshToken, nil
 }
