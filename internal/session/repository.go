@@ -50,7 +50,7 @@ func (r *SessionRepository) UpdateLastActivity(ctx context.Context, sessionID st
 	return err
 }
 
-func (r *SessionRepository) CreateSession(ctx context.Context, personID int, accessTokenID, refreshTokenID int64, deviceInfo, ipAddress, userAgent string) (string, error) {
+func (r *SessionRepository) CreateSession(ctx context.Context, personID int, accessTokenID, refreshTokenID string, deviceInfo, ipAddress, userAgent string) (string, error) {
 	var sessionID string
 	query := `
         INSERT INTO person_session (person_id, access_token_id, refresh_token_id, start_time, device_info, ip_address, user_agent)
