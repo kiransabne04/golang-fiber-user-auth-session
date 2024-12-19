@@ -41,9 +41,8 @@ type Role struct {
 }
 
 type PersonSession struct {
-	ID          uint64 `json:"id"`
-	PersonLid   int    `json:"person_lid"`
-	SessionUuid string `json:"session_uuid"`
+	SessionID   uint64 `json:"session_i"`
+	PersonLid   int    `json:"person_id"`
 	Active      bool   `json:"is_active"`
 	DeviceInfo  string `json:"device_info"`
 	IPAddress   string `json:"ip_address"`

@@ -31,6 +31,6 @@ func SetupRouters(app *fiber.App, services *internal.AppServices) {
 	authHandler := auth.NewAuthHandler(services.AuthService)
 	//authRoutes(v1, services)
 	// Register routes
-	RegisterUserRoutes(v1, userHandler)
+	RegisterUserRoutes(v1, userHandler, services.SessionService, authHandler.AuthService.SecretKey)
 	RegisterAuthRoutes(v1, authHandler)
 }

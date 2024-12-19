@@ -16,4 +16,6 @@ import (
 func RegisterAuthRoutes(v1 fiber.Router, authHandler *auth.AuthHandler) {
 	authGroup := v1.Group("/auth")
 	authGroup.Post("/login", authHandler.LoginHandler)
+	authGroup.Post("/refresh", authHandler.RefreshToken)
+	authGroup.Post("/logout", authHandler.LogoutHandler)
 }
