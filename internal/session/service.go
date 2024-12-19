@@ -13,8 +13,8 @@ func NewSessionService(repo *SessionRepository) *SessionService {
 	return &SessionService{repo: repo}
 }
 
-func (s *SessionService) CreateSession(ctx context.Context, personID int, ipAddress, userAgent string) (string, error) {
-	return s.repo.CreateSession(ctx, personID, "", "", ipAddress, ipAddress, userAgent)
+func (s *SessionService) CreateSession(ctx context.Context, personID int, ipAddress, userAgent string, isWebClient bool) (string, error) {
+	return s.repo.CreateSession(ctx, personID, "", "", ipAddress, ipAddress, userAgent, isWebClient)
 }
 
 func (s *SessionService) GetSessionByID(ctx context.Context, sessionID string) (*Session, error) {

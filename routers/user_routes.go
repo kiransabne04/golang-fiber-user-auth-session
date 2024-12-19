@@ -1,10 +1,8 @@
 package routers
 
 import (
-	"fiber-user-auth-session/internal/middleware"
 	"fiber-user-auth-session/internal/session"
 	"fiber-user-auth-session/internal/user"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,7 +23,7 @@ func RegisterUserRoutes(v1 fiber.Router, userHandler *user.UserHandler, sessionS
 	userGroup.Get("/test", userHandler.TestUser)
 	userGroup.Post("/register", userHandler.RegisterUser)
 
-	userGroup.Use(middleware.SessionValidationMiddleware(sessionService, secretKey, 15*time.Minute))
+	//userGroup.Use(middleware.SessionValidationMiddleware(sessionService, secretKey, 15*time.Minute))
 
 	userGroup.Get("/profile", userHandler.TestUser)
 

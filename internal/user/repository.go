@@ -15,7 +15,7 @@ type User struct {
 	FirstName string    `json:"first_name,omitempty"`
 	LastName  string    `json:"last_name,omitempty"`
 	Password  string    `json:"password"`
-	Active    int       `json:"active"`
+	Active    bool      `json:"active"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -127,6 +127,7 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*Use
 		&user.Active, &user.CreatedAt, &user.UpdatedAt,
 	)
 	if err != nil {
+		log.Println("getUserByEmail err -> ", err)
 		return nil, errors.New("user not found")
 	}
 	return &user, nil

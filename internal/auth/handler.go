@@ -3,6 +3,7 @@ package auth
 import (
 	"errors"
 	"fiber-user-auth-session/pkg"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,10 +25,24 @@ func (h *AuthHandler) LoginHandler(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return pkg.ErrorJSON(c, err, fiber.StatusBadRequest)
 	}
+	log.Println("login request in handler -> ", req)
+	// Detect client type
+	clientType := c.Get("X-Client-Type", "web") // Default to "web"
+	isWebClient := clientType == "web"
 
-	accessToken, refreshToken, err := h.AuthService.LoginService(c.Context(), req.Email, req.Password)
+	accessToken, refreshToken, err := h.AuthService.LoginService(c.Context(), req.Email, req.Password, isWebClient)
 	if err != nil {
 		return pkg.ErrorJSON(c, err, fiber.StatusUnauthorized)
+	}
+
+	if isWebClient {
+		// Set session ID in cookie for web clients
+		c.Cookie(&fiber.Cookie{
+			Name:     "session_id",
+			Value:    refreshToken, // Or session ID if needed
+			HTTPOnly: true,
+		})
+		return pkg.SuccessJSON(c, "Login successful", nil)
 	}
 
 	return pkg.SuccessJSON(c, "Login successful", fiber.Map{

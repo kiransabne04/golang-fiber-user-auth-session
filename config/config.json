@@ -1,5 +1,5 @@
 {
-    "db_url": "postgres://postgres:Nmims@2019@localhost:5432/reporting_db?sslmode=disable",
+    "db_url": "postgres://postgres:root@localhost:5432/reporting_db?sslmode=disable",
     "jwt_secret": "supersecretkey",
     "server_port": "8000",
     "token_ttl": 900,

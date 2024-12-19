@@ -21,11 +21,23 @@ func ConnectToDB(dburl string) (*pgxpool.Pool, error) {
 	for attempt := 1; attempt <= maxRetryAttempts; attempt++ {
 		pool, err := openDBPool(dburl)
 		if err == nil {
-			log.Println("Connected to Postgresql database server")
-			return pool, nil
-		}
+			// log.Println("Connected to Postgresql database server")
+			// return pool, nil
+			// check if the connection pool is valid
+			ctx, cancel := context.WithTimeout(context.Background(), DbTimeout)
+			defer cancel()
 
-		log.Printf("Failed to connect Postgresql (attempt : %d): %v", attempt, err)
+			err = pool.Ping(ctx)
+			if err == nil {
+				log.Println("Connected to postgresql database server")
+				return pool, nil
+			}
+
+			log.Printf("Ping to PostgreSQL database failed: %v", err)
+			pool.Close() // Close the pool if the ping fails
+		} else {
+			log.Printf("Failed to connect Postgresql (attempt : %d): %v", attempt, err)
+		}
 		time.Sleep(retryDelay)
 	}
 	return nil, fmt.Errorf("unable to connect postgres database instance after %d attempts", maxRetryAttempts)

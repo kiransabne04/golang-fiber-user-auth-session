@@ -50,8 +50,15 @@ func (r *SessionRepository) UpdateLastActivity(ctx context.Context, sessionID st
 	return err
 }
 
-func (r *SessionRepository) CreateSession(ctx context.Context, personID int, accessTokenID, refreshTokenID string, deviceInfo, ipAddress, userAgent string) (string, error) {
+func (r *SessionRepository) CreateSession(ctx context.Context, personID int, accessTokenID, refreshTokenID string, deviceInfo, ipAddress, userAgent string, isWebClient bool) (string, error) {
 	var sessionID string
+
+	// Use placeholder for web clients
+	if isWebClient {
+		accessTokenID = "WEB_SESSION"
+		refreshTokenID = "WEB_SESSION"
+	}
+
 	query := `
         INSERT INTO person_session (person_id, access_token_id, refresh_token_id, start_time, device_info, ip_address, user_agent)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
