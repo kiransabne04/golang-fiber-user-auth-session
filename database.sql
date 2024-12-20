@@ -113,8 +113,8 @@ DROP TABLE IF EXISTS person_session CASCADE;
 CREATE TABLE person_session (
     session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- Unique session ID,
     person_id INT NOT NULL,
-    access_token_id BIGINT NOT NULL,
-    refresh_token_id BIGINT NOT NULL,
+    access_token_id VARCHAR(1000),
+    refresh_token_id VARCHAR(1000) NOT NULL,
     start_time TIMESTAMPTZ NOT NULL,
     end_time TIMESTAMPTZ,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
@@ -123,13 +123,14 @@ CREATE TABLE person_session (
     user_agent VARCHAR(255) DEFAULT '',
     temp_url_path VARCHAR(300) DEFAULT '',
     login VARCHAR(40) DEFAULT '',
+	  last_activity TIMESTAMPTZ DEFAULT current_timestamp(5),
     created_at TIMESTAMPTZ DEFAULT current_timestamp(5),
     updated_at TIMESTAMPTZ DEFAULT current_timestamp(5),
 
-    CONSTRAINT fk_person_session_user FOREIGN KEY (person_id) REFERENCES person (id) ON DELETE CASCADE,
-    CONSTRAINT fk_access_token_tokens FOREIGN KEY (access_token_id) REFERENCES tokens (id),
-    CONSTRAINT fk_refresh_token_tokens FOREIGN KEY (refresh_token_id) REFERENCES tokens (id)
+    CONSTRAINT fk_person_session_user FOREIGN KEY (person_id) REFERENCES person (id) ON DELETE CASCADE
+
 );
+
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 

@@ -30,7 +30,7 @@ func (h *AuthHandler) LoginHandler(c *fiber.Ctx) error {
 	clientType := c.Get("X-Client-Type", "web") // Default to "web"
 	isWebClient := clientType == "web"
 
-	accessToken, refreshToken, err := h.AuthService.LoginService(c.Context(), req.Email, req.Password, isWebClient)
+	accessToken, refreshToken, sessionID, err := h.AuthService.LoginService(c.Context(), req.Email, req.Password, isWebClient)
 	if err != nil {
 		return pkg.ErrorJSON(c, err, fiber.StatusUnauthorized)
 	}
@@ -39,7 +39,7 @@ func (h *AuthHandler) LoginHandler(c *fiber.Ctx) error {
 		// Set session ID in cookie for web clients
 		c.Cookie(&fiber.Cookie{
 			Name:     "session_id",
-			Value:    refreshToken, // Or session ID if needed
+			Value:    sessionID, // Or session ID if needed
 			HTTPOnly: true,
 		})
 		return pkg.SuccessJSON(c, "Login successful", nil)

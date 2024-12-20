@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -33,6 +34,7 @@ func (r *SessionRepository) GetSessionByID(ctx context.Context, sessionID string
 	var session Session
 	err := r.db.QueryRow(ctx, query, sessionID).Scan(&session.SessionID, &session.PersonID, &session.IPAddress, &session.LastActivity, &session.IsActive)
 	if err != nil {
+		log.Println("err GetSessionByID -> ", err, sessionID)
 		return nil, err
 	}
 	return &session, nil
@@ -54,10 +56,10 @@ func (r *SessionRepository) CreateSession(ctx context.Context, personID int, acc
 	var sessionID string
 
 	// Use placeholder for web clients
-	if isWebClient {
-		accessTokenID = "WEB_SESSION"
-		refreshTokenID = "WEB_SESSION"
-	}
+	// if isWebClient {
+	// 	accessTokenID = "WEB_SESSION"
+	// 	refreshTokenID = "WEB_SESSION"
+	// }
 
 	query := `
         INSERT INTO person_session (person_id, access_token_id, refresh_token_id, start_time, device_info, ip_address, user_agent)

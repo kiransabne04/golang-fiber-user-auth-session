@@ -18,18 +18,20 @@ func NewAuthService(userRepo *user.UserRepository, sessionRepo *session.SessionR
 	return &AuthService{UserRepo: userRepo, SessionRepo: sessionRepo, SecretKey: secretKey}
 }
 
-func (s *AuthService) LoginService(ctx context.Context, email, password string, isWebClient bool) (string, string, error) {
+func (s *AuthService) LoginService(ctx context.Context, email, password string, isWebClient bool) (string, string, string, error) {
 	//verify user creds
 	user, err := s.UserRepo.GetUserByEmail(ctx, email)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	log.Println("user -> ", user)
 
 	refreshToken, err := pkg.GenerateRefreshToken(s.SecretKey)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
+
+	// save tokens generated
 
 	// vreate session
 	// _, err = s.SessionRepo.CreateSession(ctx, user.ID, accessToken, refreshToken, "", "", "")
@@ -47,15 +49,15 @@ func (s *AuthService) LoginService(ctx context.Context, email, password string, 
 		//generate access token
 		accessToken, err := pkg.GenerateAccessToken(sessionID, user.ID, s.SecretKey)
 		if err != nil {
-			return "", "", err
+			return "", "", "", err
 		}
 
 		sessionID, err = s.SessionRepo.CreateSession(ctx, user.ID, accessToken, refreshToken, "", "", "", false)
 	}
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	log.Println("sessionID created -> ", sessionID)
 
-	return accessToken, refreshToken, nil
+	return accessToken, refreshToken, sessionID, nil
 }
